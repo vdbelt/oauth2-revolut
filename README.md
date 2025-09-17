@@ -19,9 +19,9 @@ composer require vdbelt/oauth2-revolut
 Usage is the same as The League's OAuth client, using `\League\OAuth2\Client\Provider\Revolut` as the provider.
 
 ### Generating Key Pairs
-Start with generating a key pair as described in the [Revolut API docs](https://revolutdev.github.io/business-api/?shell--sandbox#revolut-api-authentication-setting-up-access-to-your-business-account):
+Start with generating a key pair as described in the [Revolut API docs](https://developer.revolut.com/docs/guides/manage-accounts/get-started/make-your-first-api-request#1-add-your-certificate):
 ```
-openssl genrsa -out privatekey.pem 1024
+openssl genrsa -out privatekey.pem 2048
 openssl req -new -x509 -key privatekey.pem -out publickey.cer -days 1825
 ```
 
