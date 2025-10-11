@@ -3,6 +3,7 @@
 namespace League\OAuth2\Client\Test\Provider;
 
 use Exception;
+use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
@@ -132,7 +133,8 @@ class RevolutTest extends TestCase
         $message = uniqid();
         $status = rand(400,600);
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $postResponse->shouldReceive('getBody')->andReturn('{"error_description": "'.$message.'","code": '.$status.'}');
+        $postResponse->shouldReceive('getBody')
+            ->andReturn(Utils::streamFor('{"error_description": "'.$message.'","code": '.$status.'}'));
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $postResponse->shouldReceive('getReasonPhrase');
         $postResponse->shouldReceive('getStatusCode')->andReturn($status);
