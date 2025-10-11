@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request: ~
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: true
+      matrix:
+        php-version: [ '8.1', '8.2', '8.3', '8.4' ]
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: "shivammathur/setup-php@v2"
+      with:
+        php-version: "${{ matrix.php-version }}"
+        coverage: "none"
+        ini-values: "memory_limit=-1, zend.assertions=1, error_reporting=-1, display_errors=On"
+        tools: "composer"
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run tests
+      run: vendor/bin/phpunit --no-coverage
