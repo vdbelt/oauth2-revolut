@@ -1,5 +1,5 @@
 # Revolut Provider for OAuth 2.0 Client
-[![Build Status](https://travis-ci.org/vdbelt/oauth2-revolut.svg?branch=master)](https://travis-ci.org/vdbelt/oauth2-revolut)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/vdbelt/oauth2-revolut/ci.yml)](https://travis-ci.org/vdbelt/oauth2-revolut)
 [![Latest Version](https://img.shields.io/github/release/vdbelt/oauth2-revolut.svg?style=flat-square)](https://github.com/vdbelt/oauth2-revolut/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Total Downloads](https://img.shields.io/packagist/dt/vdbelt/oauth2-revolut.svg?style=flat-square)](https://packagist.org/packages/vdbelt/oauth2-revolut)
@@ -30,9 +30,12 @@ Upload the public key through the Revolut for Business API Settings page, and st
 ### Authorization Code Flow
 
 ```php
+$key = \Lcobucci\JWT\Signer\Key\InMemory::file('key.pem');
+// or $key = \Lcobucci\JWT\Signer\Key\InMemory::plainText('privateKey');
+
 $provider = new League\OAuth2\Client\Provider\Revolut([
     'clientId'          => '{revolut-client-id}',
-    'privateKey'        => 'file://{revolut-private-key-path}',
+    'privateKey'        => $key,
     'redirectUri'       => 'https://example.com/callback-url' // equal to redirect URI provided to Revolut
     'isSandbox'         => false
 ]);

@@ -6,6 +6,7 @@ use Exception;
 use GuzzleHttp\Psr7\Utils;
 use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Revolut;
 use League\OAuth2\Client\Token\AccessToken;
@@ -34,11 +35,48 @@ class RevolutTest extends TestCase
     public function testMissingPrivateKeyDuringInstantiationThrowsException()
     {
         $this->expectException(InvalidArgumentException::class);
-        
+
         new \League\OAuth2\Client\Provider\Revolut([
             'clientId' => 'mock.example',
             'redirectUri' => 'https://example.com/callback-url'
         ]);
+    }
+
+    public function testPassPlainTextKey()
+    {
+        $provider = new Revolut([
+            'privateKey' => 'mock_key'
+        ]);
+
+        $privateKey = $provider->getPrivateKey();
+
+        $this->assertEquals('mock_key', $privateKey->contents());
+    }
+
+    public function testPassInstanceOfKey()
+    {
+        $key = InMemory::plainText('mock_key');
+
+        $provider = new Revolut([
+            'privateKey' => $key
+        ]);
+
+        $privateKey = $provider->getPrivateKey();
+
+        $this->assertEquals('mock_key', $privateKey->contents());
+    }
+
+    public function testIsAbleToReadKeyFromFile()
+    {
+        $path = 'file://' . __DIR__ . '/test_key.pem';
+
+        $provider = new Revolut([
+            'privateKey' => $path
+        ]);
+
+        $privateKey = $provider->getPrivateKey();
+
+        $this->assertEquals(file_get_contents($path), $privateKey->contents());
     }
 
     public function testSandbox()
@@ -115,7 +153,7 @@ class RevolutTest extends TestCase
         $token = $provider->getAccessToken('authorization_code', [
             'code' => 'hello-world'
         ]);
-        
+
         $this->assertEquals($token->getToken(), 'oa_sand_rqTQXDx4Wl72UDRShIhAIJColYASMZklLQVGA7lORWE');
         $this->assertEquals($token->getRefreshToken(), 'oa_sand_iPUCx_ZZ0koAW28A6rtL8rjwz5vjcsnjs-4DEEPjTEI');
     }
@@ -123,7 +161,7 @@ class RevolutTest extends TestCase
     public function testNotImplementedGetResourceOwnerDetailsUrl()
     {
         $this->expectException(Exception::class);
-        
+
         $this->provider->getResourceOwnerDetailsUrl(new AccessToken(['access_token' => 'hello']));
     }
 
